@@ -1,8 +1,6 @@
-calcChange Number Number :: Number
+checkOnEven n =
+  if even n then evenN
+  else nonEvenN
 
-calcChange owed given =
-  if change > 0
-      then change
-  else 0
-
-  where change = given - owed
+  where evenN = n - 2
+        nonEvenN = 3 * n + 1

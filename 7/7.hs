@@ -18,4 +18,8 @@ myDrop 0 aList  = aList
 myDrop _ [] = []
 
 myDrop n (x:xs) = myDrop (n - 1) xs
-   
+
+myReverse [] = []
+myReverse (x:[]) = [x]
+
+myReverse (x:xs) = myReverse xs ++ [x]

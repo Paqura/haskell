@@ -11,4 +11,11 @@ myTake n (x:xs)  = x:rest
   where rest = myTake (n - 1) xs
 
 {- просто конкатенируем первое значение с остатков (массивом) слепленным с первым значением бесконечно -}
-myCycle (x:xs) = x : myCycle (xs++[x]) 
+myCycle (x:xs) = x : myCycle (xs++[x])
+
+{- корнер кейсы: если эл-ов 0 возвращаем массив, если пустой массив возвращаем пустой массив -}
+myDrop 0 aList  = aList
+myDrop _ [] = []
+
+myDrop n (x:xs) = myDrop (n - 1) xs
+   

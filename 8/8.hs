@@ -21,4 +21,4 @@ myReverse xs = foldl rcons [] xs
 -- тут initVal уже будет финальным результатом
 myFoldl operand initVal [] = initVal
 myFoldl operand initVal (x:xs) = myFoldl operand result xs
-  where result = initVal (operand) x
+  where result = operand initVal x

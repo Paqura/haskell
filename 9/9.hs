@@ -10,3 +10,5 @@ drink aCup mlDrank = cup (ml - mlDrank)
 afterASip = drink coffeeCup 30
 -- чтобы проверить результат
 -- getMl afterSip
+
+afterManySip = foldl drink coffeeCup [30, 50, 40]

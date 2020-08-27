@@ -37,8 +37,16 @@ sexInitial :: Sex -> Char
 sexInitial Male = 'M'
 sexInitial Female = 'W'
 
-data Patient = Patient Name Sex
+showName :: Name -> String
+showName (Name f s) = f ++ " " ++  s
 
-createPacient :: Patient -> Patient
-createPacient patient = patient
+showSex :: Sex -> Char
+showSex sex = sexInitial sex 
 
+data User = User Name Sex
+
+createUser :: FirstName -> LastName -> Sex -> User
+createUser fName lName sex  =  User (Name fName lName) sex 
+
+printUser :: User -> String
+printUser (User (Name f l) sex) = f ++ "hello " 

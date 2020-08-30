@@ -24,33 +24,59 @@
 
 ----------
 
+-- type FirstName = String
+-- type LastName = String
+-- type MiddleName = String
+
+-- data Name = Name FirstName LastName
+--    | MiddleName FirstName MiddleName LastName
+
+-- data Sex = Male | Female
+
+-- sexInitial :: Sex -> Char
+-- sexInitial Male = 'M'
+-- sexInitial Female = 'W'
+
+-- showName :: Name -> String
+-- showName (Name f s) = f ++ " " ++  s
+
+-- showSex :: Sex -> Char
+-- showSex sex = sexInitial sex
+
+-- data User = User Name Sex
+
+-- createUser :: FirstName -> LastName -> Sex -> User
+-- createUser fName lName sex = User (Name fName lName) sex
+
+-- printUser :: User -> String
+-- printUser (User (Name f l) sex) = f ++ ", " ++ l ++ ", sex: " ++ show (sexInitial sex)
+
+-- user = createUser "slava" "popov" Male
+
+-- -- printUser user // "slava, popov, sex: Male"
+
+----------
+
 type FirstName = String
 type LastName = String
-type MiddleName = String
-
-data Name = Name FirstName LastName
-   | MiddleName FirstName MiddleName LastName
 
 data Sex = Male | Female
 
-sexInitial :: Sex -> Char
-sexInitial Male = 'M'
-sexInitial Female = 'W'
+initSex :: Sex -> Char
+initSex Male = 'M'
+initSex Female = 'W'
 
-showName :: Name -> String
-showName (Name f s) = f ++ " " ++  s
+data Name = Name FirstName LastName
+data Patient = Patient Name Sex
 
-showSex :: Sex -> Char
-showSex sex = sexInitial sex 
+createName :: FirstName -> LastName -> Name
 
-data User = User Name Sex
+createName fName lName = Name fName lName
 
-createUser :: FirstName -> LastName -> Sex -> User
-createUser fName lName sex  =  User (Name fName lName) sex 
+createPatient :: Name -> Sex -> Patient
 
-printUser :: User -> String
-printUser (User (Name f l) sex) = f ++ ", " ++ l ++ ", sex: " ++ show (sexInitial sex)
+createPatient name sex = Patient name sex
 
-user = createUser "slava" "popov" Male
-
--- printUser user // "slava, popov, sex: Male"
+showPatientName (Patient (Name f l) _) = f ++ " " ++ l
+showPatientSex (Patient _ sex) = initSex sex
+showPatientInfo (Patient (Name f l) sex) = f ++ " " ++ l ++ "\n" ++ ", sex: " ++ show (initSex sex)

@@ -49,4 +49,8 @@ createUser :: FirstName -> LastName -> Sex -> User
 createUser fName lName sex  =  User (Name fName lName) sex 
 
 printUser :: User -> String
-printUser (User (Name f l) sex) = f ++ ", sex: " ++ show (sexInitial sex)
+printUser (User (Name f l) sex) = f ++ ", " ++ l ++ ", sex: " ++ show (sexInitial sex)
+
+user = createUser "slava" "popov" Male
+
+-- printUser user // "slava, popov, sex: Male"

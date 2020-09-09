@@ -29,14 +29,23 @@ data CollectibleToy = CollectibleToy {
   , toyPrice :: Double
 }
 
+data Pamphlet = Pamphlet {
+    pamphletName :: String
+  , descr :: String
+  , info :: String
+}
+
 data StoreItem =
-  BookItem Book | RecordItem VinylRecord | ToyItem CollectibleToy
+  BookItem Book | RecordItem VinylRecord | ToyItem CollectibleToy | PamphletItem Pamphlet
 
 price :: StoreItem -> Double
 
 price (BookItem book) = bookPrice book
 price (RecordItem record) = recordPrice record
 price (ToyItem toy) = toyPrice toy
+
+getInfo :: StoreItem -> String
+getInfo (PamphletItem pamphlet) = info pamphlet
 
 -- пример использования
 

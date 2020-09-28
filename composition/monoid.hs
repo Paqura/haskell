@@ -7,7 +7,7 @@ data PTable = PTable Events Probs
 
 createTable :: Events -> Probs -> PTable
 createTable events probs = PTable events normalizedProbs
-  where totalProbs     = sum probs
+  where totalProbs      = sum probs
         normalizedProbs = map (\x -> x/totalProbs) probs
 
 showPair :: String -> Double -> String
@@ -19,5 +19,3 @@ showPair event prob = mconcat [event, "|", show prob, "\n"]
 instance Show PTable where
   show (PTable events probs) = mconcat pairs
     where pairs = zipWith showPair events probs
-
-

@@ -7,29 +7,15 @@ import Data.Semigroup
 -- getMinVal :: Ord a -> a
 -- getMinVal = head . sort
 
-data Color = Red
+data Color =
+  Transparent
+  | Red
   | Yellow
   | Blue
   | Purple
   | Orange
   | Green
   | Brown deriving (Show, Eq)
-
--- instance Semigroup Color where
---   (<>) Red Blue = Purple
---   (<>) Blue Red = Purple
---   (<>) Yellow Blue = Green
---   (<>) Blue Yellow = Green
---   (<>) Yellow Red = Orange
---   (<>) Red Yellow = Orange
---   (<>) a b = if a == b
---               then a
---               else Brown
-
--- пример
--- orange = Red <> Yellow
-
---------------------
 
 -- охранные выражение
 howMuch :: Int -> String
@@ -39,6 +25,8 @@ howMuch n | n > 10 = "куча"
 
 
 instance Semigroup Color where
+  (<>) Transparent any = any
+  (<>) any Transparent = any
   (<>) Red Blue = Purple
   (<>) Blue Red = Purple
   (<>) Yellow Blue = Green
@@ -51,3 +39,7 @@ instance Semigroup Color where
       | all (`elem` [Yellow, Blue, Green]) [a, b] = Green
       | all (`elem` [Red, Yellow, Orange]) [a, b] = Orange
       | otherwise = Brown
+
+instance Monoid Color where
+  mempty = Transparent
+  mappend l1 l2 = l1 <> l2

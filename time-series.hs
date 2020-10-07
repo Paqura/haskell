@@ -34,8 +34,8 @@ createTS times values = TS completeTimes extendedValues
     -- потом максимальное и создастся массив от мин до мах [1..5]
     completeTimes = [minimum times .. maximum times]
     timeValueMap = Map.fromList (zip times values)
-    {- HLINT -}
-    extendedValues = map (\v -> Map.lookup v timeValueMap) completeTimes
+    -- (`Map.lookup` timeValueMap) == (\v -> Map.lookup v timeValueMap)
+    extendedValues = map (`Map.lookup` timeValueMap) completeTimes
 
 fileToTS :: [(Int, a)] -> TS a
 fileToTS tvPairs = createTS times values
@@ -74,3 +74,45 @@ ts4 = fileToTS file4
 -- 10|201.2
 -- 11|NA
 -- 12|202.9
+
+-- k v - key value
+insertMaybePair :: Ord k => Map.Map k v -> (k, Maybe v) -> Map.Map k v
+insertMaybePair myMap (_, Nothing) = myMap
+insertMaybePair myMap (key, Just value) = Map.insert key value myMap
+
+combineTS :: TS a -> TS a -> TS a
+combineTS (TS [] []) ts2 = ts2
+combineTS ts1 (TS [] []) = ts1
+combineTS (TS t1 v1) (TS t2 v2) = TS completeTimes combinedValues
+  where
+    bothTimes = mconcat [t1, t2]
+    completeTimes = [minimum bothTimes .. maximum bothTimes]
+    tvMap = foldl insertMaybePair Map.empty (zip t1 v1)
+    updatedMap = foldl insertMaybePair tvMap (zip t2 v2)
+    -- тут опять махинация с лямбдой
+    combinedValues = map (`Map.lookup` updatedMap) completeTimes
+
+instance Semigroup (TS a) where
+  (<>) = combineTS
+
+-- ts1 <> ts2
+-- 1|200.1
+-- 2|199.5
+-- 3|199.4
+-- 4|198.9
+-- 5|199.0
+-- 6|200.2
+-- 7|NA
+-- 8|NA
+-- 9|200.3
+-- 10|201.2
+-- 11|201.6
+-- 12|201.5
+-- 13|201.5
+-- 14|203.5
+-- 15|204.9
+-- 16|207.1
+-- 17|NA
+-- 18|210.5
+-- 19|NA
+-- 20|208.8

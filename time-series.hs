@@ -1,7 +1,7 @@
--- import Data.List
+import Data.List
 import qualified Data.Map as Map
--- import Data.Semigroup
--- import Data.Maybe
+import Data.Semigroup
+import Data.Maybe
 
 type File = [(Int, Double)]
 
@@ -116,3 +116,61 @@ instance Semigroup (TS a) where
 -- 18|210.5
 -- 19|NA
 -- 20|208.8
+
+instance Monoid (TS a) where
+  mempty = TS [] []
+  mappend = (<>)
+
+-- mconcat [ts1, ts2]
+-- получим тот же результат что и ts1 <> ts2
+
+tsAll :: TS Double
+tsAll = mconcat [ts1, ts2, ts3, ts4]
+
+-- mean - среднее арифмитическое
+mean :: (Real a) => [a] -> Double
+mean xs = total / count
+  where
+    total = (realToFrac . sum) xs
+    count = (realToFrac . length) xs
+
+meanTS :: (Real a) => TS a -> Maybe Double
+meanTS (TS _ []) = Nothing
+meanTS (TS _ values)
+  | all (== Nothing) values = Nothing
+  | otherwise = Just avg
+
+  where
+    justVals  = filter isJust values
+    cleanVals = map fromJust justVals
+    avg       = mean cleanVals
+
+-- Функция сравнения
+
+type CompareFunc a = a -> a -> a
+type TSCompareFunc a = (Int, Maybe a) -> (Int, Maybe a) -> (Int, Maybe a)
+
+makeTSCompare :: Eq a => CompareFunc a -> TSCompareFunc a
+makeTSCompare func = newFunc
+  where
+    newFunc (i1, Nothing) (_, Nothing) = (i1, Nothing)
+    newFunc (_, Nothing) (i, val) = (i, val)
+    newFunc (i, val) (_, Nothing) = (i, val)
+    newFunc (i1, Just val1) (i2, Just val2)
+      | func val1 val2 == val1 = (i1, Just val1)
+      | otherwise = (i2, Just val2)
+
+compareTS :: Eq a => (a -> a -> a) -> TS a -> Maybe (Int, Maybe a)
+compareTS _ (TS [] []) = Nothing
+compareTS func (TS times values)
+  | all (== Nothing) values = Nothing
+  | otherwise = Just best
+  where
+    pairs = zip times values
+    best = foldl (makeTSCompare func) (0, Nothing) pairs
+
+minTS :: Ord a => TS a -> Maybe (Int, Maybe a)
+minTS = compareTS min
+
+maxTS :: Ord a => TS a -> Maybe (Int, Maybe a)
+maxTS = compareTS max

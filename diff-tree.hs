@@ -45,4 +45,4 @@ createNode id nodeType state value children = Node id nodeType state value allCh
     Node cId cType cState cValue cChildren = head children
     allChild
           | isLastChild = []
-          | otherwise = createNode cId cType cState cValue cChildren : children
+          | otherwise = [createNode cId cType cState cValue cChildren]

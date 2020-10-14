@@ -19,24 +19,30 @@ data Node a = Node
     , nodeType :: NodeType
     , state :: NodeState
     , value :: a
+    , children :: [Node a]
   }
 
 
 printNode :: Show a => Node a -> String
-printNode (Node id nodeType state value) =
+printNode (Node id nodeType state value children) =
   mconcat [
     "{", "\n",
     " id:", show id, "\n",
     " nodeType:", show nodeType, "\n",
     " state:", show state, "\n",
     " value:", show value, "\n",
+    " children:", show children, "\n",
     "}"
   ]
 
 instance Show a => Show (Node a) where
-  show (Node id nodeType state value) = printNode (Node id nodeType state value)
+  show (Node id nodeType state value children) = printNode (Node id nodeType state value children)
 
-createNode :: Int -> NodeType -> NodeState -> a -> Node a
-createNode = Node
-
-
+createNode :: Int -> NodeType -> NodeState -> a -> [Node a] -> Node a
+createNode id nodeType state value children = Node id nodeType state value allChild
+  where
+    isLastChild = null children
+    Node cId cType cState cValue cChildren = head children
+    allChild
+          | isLastChild = []
+          | otherwise = createNode cId cType cState cValue cChildren : children

@@ -1,8 +1,8 @@
 type Div = String
 type Span = String
 
-data NodeType = Div | Span
-data NodeState = Unchanged | Changed | Deleted deriving Enum
+data NodeType = Div | Span deriving Eq
+data NodeState = Unchanged | Changed | Deleted deriving (Enum, Eq)
 
 instance Show NodeType where
   show Div = "div"
@@ -46,3 +46,19 @@ createNode id nodeType state value children = Node id nodeType state value allCh
     allChild
           | isLastChild = []
           | otherwise = [createNode cId cType cState cValue cChildren]
+
+type NodeDiff = String
+
+getDiff :: Eq a => Node a -> Node a -> Bool
+getDiff (Node aId aType aState aValue aChildren) (Node cId cType cState cValue cChildren)
+  | aId /= cId = True
+  | aType /= cType = True
+  | aState /= cState = True
+  | aValue /= cValue = True
+  | null aChildren /= null cChildren = True
+  | otherwise = getDiff (head aChildren) (head cChildren)
+
+node1 = createNode 0 Div Unchanged 666 []
+node2 = createNode 1 Div Unchanged 666 []
+
+

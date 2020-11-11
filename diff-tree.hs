@@ -61,4 +61,30 @@ getDiff (Node aId aType aState aValue aChildren) (Node cId cType cState cValue c
 node1 = createNode 0 Div Unchanged 666 []
 node2 = createNode 1 Div Unchanged 666 []
 
+data NodePatch a = NodePatch {
+      id :: Int
+    , nodeType :: NodeType
+    , state :: NodeState
+    , value :: a
+    , children :: [Node a]
+}
 
+{-
+  Основная идея,которую надо реализовать:
+
+
+  есть два дерева типа tree
+
+  tree = {
+    type: 'div' | 'span' | '...'
+    props: // как-то в типе описать
+    children: [0..Infinity] - массив деревьев или пустой массив
+  }
+
+  их нужно сравнить и сделать патч
+
+  patch = tree
+
+  https://github.com/Matt-Esch/virtual-dom/blob/master/vtree/diff.js
+
+-}

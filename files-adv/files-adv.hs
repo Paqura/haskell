@@ -27,5 +27,5 @@ main = do
   let fileName = head args
   input <- readFile fileName
   let summary = (countsText . getCounts) input
-  appendFile "stats.txt" (mconcat [fileName, " ", summary, "\n"])
+  appendFile "stats.txt" $ mconcat [fileName, " ", summary, "\n"]
   putStrLn summary

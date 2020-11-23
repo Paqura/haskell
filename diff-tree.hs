@@ -42,5 +42,5 @@ createNode nodeType props children = Node nodeType props allChild
     Node cType cProps cChildren = head children
     allChild
           | isLastChild = []
-          | otherwise = [createNode cType createProps cProps cChildren]
+          | otherwise = [createNode cType cProps cChildren]
 

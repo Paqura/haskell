@@ -1,64 +1,43 @@
-type Div = String
-type Span = String
+{-# LANGUAGE DuplicateRecordFields #-}
 
-data NodeType = Div | Span deriving Eq
+import qualified Data.Map as Map
+
+type TNode = String
+type TText = String
+
+data NodeType = TNode | TText deriving Eq
 data NodeState = Unchanged | Changed | Deleted deriving (Enum, Eq)
-
 instance Show NodeType where
-  show Div = "div"
-  show Span = "span"
+  show TNode = "Node"
+  show TText = "Text"
 
-instance Show NodeState where
-  show Unchanged = "unchanged"
-  show Changed = "changed"
-  show Deleted = "deleted"
-
-data Node a = Node
+type Props = Map.Map String String
+data Node = Node
   {
-      id :: Int
-    , nodeType :: NodeType
-    , state :: NodeState
-    , value :: a
-    , children :: [Node a]
+      nodeType :: NodeType
+    , props :: Props
+    , children :: [Node]
   }
 
-
-printNode :: Show a => Node a -> String
-printNode (Node id nodeType state value children) =
+printNode :: Node -> String
+printNode (Node nodeType props children) =
   mconcat [
     "{", "\n",
-    " id:", show id, "\n",
     " nodeType:", show nodeType, "\n",
-    " state:", show state, "\n",
-    " value:", show value, "\n",
+    " props:", show props, "\n",
     " children:", show children, "\n",
     "}"
   ]
 
-instance Show a => Show (Node a) where
-  show (Node id nodeType state value children) = printNode (Node id nodeType state value children)
+instance Show Node where
+  show (Node nodeType props children) = printNode (Node nodeType props children)
 
-createNode :: Int -> NodeType -> NodeState -> a -> [Node a] -> Node a
-createNode id nodeType state value children = Node id nodeType state value allChild
+createNode :: NodeType -> Props -> [Node] -> Node
+createNode nodeType props children = Node nodeType props allChild
   where
     isLastChild = null children
-    Node cId cType cState cValue cChildren = head children
+    Node cType cProps cChildren = head children
     allChild
           | isLastChild = []
-          | otherwise = [createNode cId cType cState cValue cChildren]
-
-type NodeDiff = String
-
-getDiff :: Eq a => Node a -> Node a -> Bool
-getDiff (Node aId aType aState aValue aChildren) (Node cId cType cState cValue cChildren)
-  | aId /= cId = True
-  | aType /= cType = True
-  | aState /= cState = True
-  | aValue /= cValue = True
-  | null aChildren /= null cChildren = True
-  | otherwise = getDiff (head aChildren) (head cChildren)
-
-node1 = createNode 0 Div Unchanged 666 []
-node2 = createNode 1 Div Unchanged 666 []
-
+          | otherwise = [createNode cType cProps cChildren]
 

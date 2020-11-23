@@ -1,0 +1,2 @@
+1.txt symbols:  28  words:  4  rows:  3
+2.txt symbols:  12  words:  2  rows:  1

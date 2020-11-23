@@ -45,5 +45,3 @@ highlight query fullText = T.intercalate highlighted pieces
 main :: IO()
 main = do
   TIO.putStrLn $ highlight dharma bgText
-
-

@@ -12,6 +12,9 @@ instance Show NodeType where
   show TText = "Text"
 
 type Props = Map.Map String String
+
+createProps :: [(String, String)] -> Props
+createProps = Map.fromList
 data Node = Node
   {
       nodeType :: NodeType
@@ -39,6 +42,5 @@ createNode nodeType props children = Node nodeType props allChild
     Node cType cProps cChildren = head children
     allChild
           | isLastChild = []
-          | otherwise = [createNode cType cProps cChildren]
+          | otherwise = [createNode cType createProps cProps cChildren]
 
--}

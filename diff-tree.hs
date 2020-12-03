@@ -12,10 +12,12 @@ instance Show NodeType where
   show TNode = "Node"
   show TText = "Text"
 
+type Key = String
+type Value = String
 -- можно и Props k v = Map.Map k v
-type Props = Map.Map String String
+type Props = Map.Map Key Value
 
-createProps :: [(String, String)] -> Props
+createProps :: [(Key, Value)] -> Props
 createProps = Map.fromList
 
 type Children = [Node]
@@ -71,12 +73,11 @@ checkAndR a p
   where
     v = Map.lookup a p
 
-vPropsDiff :: Props -> Props -> (Bool, Props)
-vPropsDiff p1 p2 = result
-  where
-    keys = Map.keys p2
-    patch = foldl (\x -> Map.insert x (checkAndR x p1) p2) p2 keys
-    result = (True, patch)
+getMaybeValueWithFallback :: Key -> Props -> Value
+getMaybeValueWithFallback key props = fromMaybe "" (Map.lookup key props)
+
+vPropsDiff :: Props -> Props -> Props
+vPropsDiff p1 p2 = Map.foldl (\k v -> Map.insert v (getMaybeValueWithFallback v p2) k) p1 p2
 
 -- vDiff :: Node -> Node -> NodePatch
 -- vDiff (Node n1type n1props n1children) (Node n2type n2props n2children) = patch

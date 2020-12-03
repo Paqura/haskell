@@ -1,6 +1,7 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 
 import qualified Data.Map as Map
+import Data.Maybe
 
 type TNode = String
 type TText = String
@@ -11,6 +12,7 @@ instance Show NodeType where
   show TNode = "Node"
   show TText = "Text"
 
+-- можно и Props k v = Map.Map k v
 type Props = Map.Map String String
 
 createProps :: [(String, String)] -> Props
@@ -50,25 +52,41 @@ props1 :: Props
 props1 = Map.fromList [("id", "2"), ("class", "test")]
 
 props2 :: Props
-props2 = Map.fromList [("class", "test2"), ("id", "3")]
+props2 = Map.fromList [("class", "test2"), ("id", "3"), ("unexpected", "woooh")]
 
-mA = Map.difference props1 props2
 node1 = createNode TNode (Map.fromList [("class", "test")]) []
 node2 = createNode TText (Map.fromList [("class", "test"), ("newProp", "woo")]) [node1]
 
+-- TODO: разобрать, возможно тут можно упростить или найти готовую реализацию
+-- insertMaybePair :: Ord k => Map.Map k v -> (k, Maybe v) -> Map.Map k v
+-- insertMaybePair myMap (_, Nothing) = myMap
+-- insertMaybePair myMap (key, Just value) = Map.insert key value myMap
+
 type NodePatch = Node
 
--- vPropsDiff :: Props -> Props -> Props
--- vPropsDiff p1 p2 = Map.map
-
-vDiff :: Node -> Node -> NodePatch
-vDiff (Node n1type n1props n1children) (Node n2type n2props n2children) = patch
+checkAndR :: String -> Props -> String
+checkAndR a p
+        | isJust v = fromJust v
+        | otherwise = "empty"
   where
-      isSameType = n1type == n2type
-      isSamePropsLen = Map.size n1props == Map.size n2props
-      isSameChildren = length n1children == length n2children
-      patch
-        | not isSameType = vDiff (Node n2type n1props n1children) (Node n2type n2props n2children)
-        | not isSamePropsLen = vDiff (Node n1type n2props n1children) (Node n2type n2props n2children)
-        | not isSameChildren = vDiff (Node n1type n1props n2children) (Node n2type n2props n2children)
-        | otherwise = Node n1type n1props n1children
+    v = Map.lookup a p
+
+vPropsDiff :: Props -> Props -> (Bool, Props)
+vPropsDiff p1 p2 = result
+  where
+    keys = Map.keys p2
+    patch = foldl (\x -> Map.insert x (checkAndR x p1) p2) p2 keys
+    result = (True, patch)
+
+-- vDiff :: Node -> Node -> NodePatch
+-- vDiff (Node n1type n1props n1children) (Node n2type n2props n2children) = patch
+--   where
+--       isSameType = n1type == n2type
+--       propsDiffTuple = vPropsDiff n1props n2props
+--       isSameProps = fst propsDiffTuple
+--       isSameChildren = length n1children == length n2children
+--       patch
+--         | not isSameType = vDiff (Node n2type n1props n1children) (Node n2type n2props n2children)
+--         | not isSameProps = vDiff (Node n1type n2props n1children) (Node n2type n2props n2children)
+--         | not isSameChildren = vDiff (Node n1type n1props n2children) (Node n2type n2props n2children)
+--         | otherwise = Node n1type n1props n1children

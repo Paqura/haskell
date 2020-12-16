@@ -14,7 +14,6 @@ instance Show NodeType where
 
 type Key = String
 type Value = String
--- можно и Props k v = Map.Map k v
 type Props = Map.Map Key Value
 
 createProps :: [(Key, Value)] -> Props
@@ -56,38 +55,30 @@ props1 = Map.fromList [("id", "2"), ("class", "test")]
 props2 :: Props
 props2 = Map.fromList [("class", "test2"), ("id", "3"), ("unexpected", "woooh")]
 
-node1 = createNode TNode (Map.fromList [("class", "test")]) []
-node2 = createNode TText (Map.fromList [("class", "test"), ("newProp", "woo")]) [node1]
+props3 :: Props
+props3 = Map.fromList [("class", "test"), ("id", "2")]
 
--- TODO: разобрать, возможно тут можно упростить или найти готовую реализацию
--- insertMaybePair :: Ord k => Map.Map k v -> (k, Maybe v) -> Map.Map k v
--- insertMaybePair myMap (_, Nothing) = myMap
--- insertMaybePair myMap (key, Just value) = Map.insert key value myMap
+node1 = createNode TNode props1 []
+node2 = createNode TText props2 []
 
 type NodePatch = Node
 
-checkAndR :: String -> Props -> String
-checkAndR a p
-        | isJust v = fromJust v
-        | otherwise = "empty"
-  where
-    v = Map.lookup a p
-
-getMaybeValueWithFallback :: Key -> Props -> Value
-getMaybeValueWithFallback key props = fromMaybe "" (Map.lookup key props)
-
 vPropsDiff :: Props -> Props -> Props
-vPropsDiff p1 p2 = Map.foldl (\k v -> Map.insert v (getMaybeValueWithFallback v p2) k) p1 p2
+-- vPropsDiff oldProps newProps = Map.foldlWithKey (\acc key ks -> Map.insert key ks acc) oldProps newProps
+vPropsDiff = Map.foldlWithKey (\acc key val -> Map.insert key val acc)
 
--- vDiff :: Node -> Node -> NodePatch
--- vDiff (Node n1type n1props n1children) (Node n2type n2props n2children) = patch
---   where
---       isSameType = n1type == n2type
---       propsDiffTuple = vPropsDiff n1props n2props
---       isSameProps = fst propsDiffTuple
---       isSameChildren = length n1children == length n2children
---       patch
---         | not isSameType = vDiff (Node n2type n1props n1children) (Node n2type n2props n2children)
---         | not isSameProps = vDiff (Node n1type n2props n1children) (Node n2type n2props n2children)
---         | not isSameChildren = vDiff (Node n1type n1props n2children) (Node n2type n2props n2children)
---         | otherwise = Node n1type n1props n1children
+vDiff :: Node -> Node -> NodePatch
+vDiff (Node n1type n1props n1children) (Node n2type n2props n2children) = patch
+  where
+      isSameType = n1type == n2type
+      isSameProps = n1props == n2props
+      propsPatch = vPropsDiff n1props n2props
+      isLeftChildrenEmpty = null n1children
+      isRightChildrenEmpty = null n2children
+      isBothChildrenEmpty = isLeftChildrenEmpty && isRightChildrenEmpty
+      patch
+        | not isSameType = vDiff (Node n2type n1props n1children) (Node n2type n2props n2children)
+        | not isSameProps = vDiff (Node n1type propsPatch n1children) (Node n2type n2props n2children)
+        -- | not isBothChildrenEmpty = vDiff (head n1children) (head n2children)
+        -- | not isSameChildren = vDiff (Node n1type n1props n2children) (Node n2type n2props n2children)
+        | otherwise = Node n1type n1props n1children

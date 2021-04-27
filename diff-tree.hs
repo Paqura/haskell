@@ -64,7 +64,7 @@ node2 = createNode TText props2 []
 type NodePatch = Node
 
 vPropsDiff :: Props -> Props -> Props
--- vPropsDiff oldProps newProps = Map.foldlWithKey (\acc key ks -> Map.insert key ks acc) oldProps newProps
+-- vPropsDiff oldProps newProps = Map.foldlWithKey (\acc key val -> Map.insert key val acc) oldProps newProps
 vPropsDiff = Map.foldlWithKey (\acc key val -> Map.insert key val acc)
 
 vDiff :: Node -> Node -> NodePatch
@@ -82,3 +82,5 @@ vDiff (Node n1type n1props n1children) (Node n2type n2props n2children) = patch
         -- | not isBothChildrenEmpty = vDiff (head n1children) (head n2children)
         -- | not isSameChildren = vDiff (Node n1type n1props n2children) (Node n2type n2props n2children)
         | otherwise = Node n1type n1props n1children
+
+printer a = show a

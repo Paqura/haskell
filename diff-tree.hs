@@ -83,4 +83,3 @@ vDiff (Node n1type n1props n1children) (Node n2type n2props n2children) = patch
         -- | not isSameChildren = vDiff (Node n1type n1props n2children) (Node n2type n2props n2children)
         | otherwise = Node n1type n1props n1children
 
-printer a = show a
